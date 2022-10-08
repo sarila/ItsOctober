@@ -1,0 +1,116 @@
+/* ====================================================
+    # Varible CSS
+============================================== */
+:root {
+    --primary-color: #1B5B7D;
+    --secondary-color: #E1913C;
+    --white-color: #ffffff;
+    --black-color: #000000;
+    --font-color: #080808;
+    --font-dark-color: #424242;
+    --footer-bg: #2a2c38;
+    --section-color: #f5f5f5;
+    --primary-font: 'rubik', sans-serif;
+    --secondary-font: 'Roboto', sans-serif;
+}
+
+/* ====================================================
+	# Normalize CSS
+============================================== */
+* {
+    box-sizing: border-box;
+}
+@font-face {
+    src: url("../fonts/Rubik/Rubik-VariableFont_wght.ttf");
+    font-family: 'rubik'; }
+
+
+body {
+    /* background: #EEEEEE; */
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.825em;
+    font-family: var(--primary-font);
+    color: var(--font-color);
+    overflow-x: hidden;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin-top: 0;
+}
+
+p {
+    margin-top: 0;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+button:focus {
+    outline: none;
+}
+
+
+
+
+/* Header-wrap */
+.header-wrap{
+    border-bottom: 1px solid #CCC;
+}
+.header-wrap ul li{
+    display: inline-block;
+    padding: 0 10px;
+}
+
+.head{
+    padding: 20px;
+}
+
+.head .logo{
+width: 230px;
+
+}
+.head ul li{
+    display: inline-block;
+    padding: 3px 0;
+    padding-right: 30px;
+}
+input[type=text] {
+    padding: 5px 80px;
+    margin-top: 8px;
+    font-size: 17px;
+    /* border: none; */
+  }
+  .search-container  .dropdown {
+   float: left;
+    padding: 5px 10px;
+    margin-top: 8px;
+    margin-right: 0px;
+    background: #FFF;
+    font-size: 17px;
+    /* border: none; */
+    cursor: pointer;
+  }
+.search-container button {
+    float: right;
+    padding: 5px 10px;
+    margin-top: 8px;
+    margin-right: 16px;
+    background: #FFF;
+    font-size: 17px;
+    /* border: none; */
+    cursor: pointer;
+  }
