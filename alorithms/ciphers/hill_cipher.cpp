@@ -1,38 +1,3 @@
-/**
- * @file hill_cipher.cpp
- * @brief Implementation of [Hill
- * cipher](https://en.wikipedia.org/wiki/Hill_cipher) algorithm.
- *
- * Program to generate the encryption-decryption key and perform encryption and
- * decryption of ASCII text using the famous block cipher algorithm. This is a
- * powerful encryption algorithm that is relatively easy to implement with a
- * given key. The strength of the algorithm depends on the size of the block
- * encryption matrix key; the bigger the matrix, the stronger the encryption and
- * more difficult to break it. However, the important requirement for the matrix
- * is that:
- * 1. matrix should be invertible - all inversion conditions should be satisfied
- * and
- * 2. its determinant must not have any common factors with the length of
- * character set
- * Due to this restriction, most implementations only implement with small 3x3
- * encryption keys and a small subset of ASCII alphabets.
- *
- * In the current implementation, I present to you an implementation for
- * generating larger encryption keys (I have attempted upto 10x10) and an ASCII
- * character set of 97 printable characters. Hence, a typical ASCII text file
- * could be easily encrypted with the module. The larger character set increases
- * the modulo of cipher and hence the matrix determinants can get very large
- * very quickly rendering them ill-defined.
- *
- * \note This program uses determinant computation using LU decomposition from
- * the file lu_decomposition.h
- * \note The matrix generation algorithm is very rudimentary and does not
- * guarantee an invertible modulus matrix. \todo Better matrix generation
- * algorithm.
- *
- * @author [Krishna Vedala](https://github.com/kvedala)
- */
-
 #include <cassert>
 #include <cmath>
 #include <cstring>
@@ -46,10 +11,6 @@
 #endif
 
 #include "../numerical_methods/lu_decomposition.h"
-
-/**
- * operator to print a matrix
- */
 template <typename T>
 static std::ostream &operator<<(std::ostream &out, matrix<T> const &v) {
     const int width = 15;
@@ -65,29 +26,14 @@ static std::ostream &operator<<(std::ostream &out, matrix<T> const &v) {
     return out;
 }
 
-/** \namespace ciphers
- * \brief Algorithms for encryption and decryption
- */
 namespace ciphers {
 /** dictionary of characters that can be encrypted and decrypted */
 static const char *STRKEY =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789~!@#$%^&"
     "*()_+`-=[]{}|;':\",./<>?\\\r\n \0";
 
-/**
- * @brief Implementation of [Hill
- * Cipher](https://en.wikipedia.org/wiki/Hill_cipher) algorithm
- */
 class HillCipher {
  private:
-    /**
-     * @brief Function to generate a random integer in a given interval
-     *
-     * @param a lower limit of interval
-     * @param b upper limit of interval
-     * @tparam T type of output
-     * @return random integer in the interval \f$[a,b)\f$
-     */
     template <typename T1, typename T2>
     static const T2 rand_range(T1 a, T1 b) {
         // generate random number between 0 and 1
@@ -97,23 +43,6 @@ class HillCipher {
         return static_cast<T2>(r * (b - a) + a);
     }
 
-    /**
-     * @brief Function overload to fill a matrix with random integers in a given
-     * interval
-     *
-     * @param M pointer to matrix to be filled with random numbers
-     * @param a lower limit of interval
-     * @param b upper limit of interval
-     * @tparam T1 type of input range
-     * @tparam T2 type of matrix
-     * @return determinant of generated random matrix
-     *
-     * @warning There will need to be a balance between the matrix size and the
-     * range of random numbers. If the matrix is large, the range of random
-     * numbers must be small to have a well defined keys. Or if the matrix is
-     * smaller, the random numbers range can be larger. For an 8x8 matrix, range
-     * should be no more than \f$[0,10]\f$
-     */
     template <typename T1, typename T2>
     static double rand_range(matrix<T2> *M, T1 a, T1 b) {
         for (size_t i = 0; i < M->size(); i++) {
@@ -124,16 +53,6 @@ class HillCipher {
 
         return determinant_lu(*M);
     }
-
-    /**
-     * @brief Compute
-     * [GCD](https://en.wikipedia.org/wiki/Greatest_common_divisor) of two
-     * integers using Euler's algorithm
-     *
-     * @param a first number
-     * @param b second number
-     * @return GCD of \f$a\f$ and \f$b\f$
-     */
     template <typename T>
     static const T gcd(T a, T b) {
         if (b > a)  // ensure always a < b
@@ -148,14 +67,6 @@ class HillCipher {
         return a;
     }
 
-    /**
-     * @brief helper function to perform vector multiplication with encryption
-     * or decryption matrix
-     *
-     * @param vector vector to multiply
-     * @param key encryption or decryption key matrix
-     * @return corresponding encrypted or decrypted text
-     */
     static const std::valarray<uint8_t> mat_mul(
         const std::valarray<uint8_t> &vector, const matrix<int> &key) {
         std::valarray<uint8_t> out(vector);  // make a copy
@@ -172,21 +83,8 @@ class HillCipher {
 
         return out;
     }
-
-    /**
-     * @brief Get the character at a given index in the ::STRKEY
-     *
-     * @param idx index value
-     * @return character at the index
-     */
     static inline char get_idx_char(const uint8_t idx) { return STRKEY[idx]; }
 
-    /**
-     * @brief Get the index of a character in the ::STRKEY
-     *
-     * @param ch character to search
-     * @return index of character
-     */
     static inline uint8_t get_char_idx(const char ch) {
         size_t L = std::strlen(STRKEY);
 
@@ -199,27 +97,16 @@ class HillCipher {
         return 0;
     }
 
-    /**
-     * @brief Convenience function to perform block cipher operations. The
-     * operations are identical for both encryption and decryption.
-     *
-     * @param text input text to encrypt or decrypt
-     * @param key key for encryption or decryption
-     * @return encrypted/decrypted output
-     */
     static const std::string codec(const std::string &text,
                                    const matrix<int> &key) {
         size_t text_len = text.length();
         size_t key_len = key.size();
 
-        // length of output string must be a multiple of key_len
-        // create output string and initialize with '\0' character
         size_t L2 = text_len % key_len == 0
                         ? text_len
                         : text_len + key_len - (text_len % key_len);
         std::string coded_text(L2, '\0');
 
-        // temporary array for batch processing
         int i;
 #ifdef _OPENMP
 #pragma parallel omp for private(i)
